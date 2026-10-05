@@ -90,7 +90,7 @@ workflow PIPELINE_INITIALISATION {
         .map {
             meta, fastq_1, fastq_2 ->
                 if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
+                    return [ meta.id,  meta + [ single_end:true ], [ fastq_1 ] ]
                 } else {
                     return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
                 }
@@ -104,8 +104,9 @@ workflow PIPELINE_INITIALISATION {
                 return [ meta, fastqs.flatten() ]
         }
         .set { ch_samplesheet }
-
+    ch_samplesheet.view()
     emit:
+
     samplesheet = ch_samplesheet
     versions    = ch_versions
 }
