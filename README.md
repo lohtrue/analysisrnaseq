@@ -2,9 +2,9 @@
 
 ## Introduction
 
-**lohtrue/analysisrnaseq** is a bioinformatics pipeline that ...
+**lohtrue/analysisrnaseq** is a lightweight bioinformatics pipeline designed for educational purposes. It focuses on memory efficiency, fast runtime and reproducibility, allowing students to understand and explore each step of a RNA-seq analysis on their own computer. Using established, resource-efficient tools, it walks through the core steps of a typical RNA-analysis (quality control, trimming, alignment to a reference genome, duplicate marking and gene level quantification). To simplify the usage on standard laptops, resource limits and read subsampling can be easily adjusted by the user.
 
-<!-- TODO nf-core:
+<!-- TODO nf-core: 
    Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
    major pipeline sections and the types of output it produces. You're giving an overview to someone new
    to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
