@@ -136,6 +136,15 @@
     "properties": {
         "subsample": {
             "type": "string"
+        },
+        "fasta": {
+            "type": "string"
+        },
+        "gtf": {
+            "type": "string"
+        },
+        "hisat2_index": {
+            "type": "string"
         }
     }
 }
