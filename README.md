@@ -2,7 +2,8 @@
 
 ## Introduction
 
-**lohtrue/analysisrnaseq** is a lightweight bioinformatics pipeline designed for educational purposes. It focuses on memory efficiency, fast runtime and reproducibility, allowing students to understand and explore each step of a RNA-seq analysis on their own computer. Using established, resource-efficient tools, it walks through the core steps of a typical RNA-analysis (quality control, trimming, alignment to a reference genome, duplicate marking and gene level quantification). To simplify the usage on standard laptops, resource limits and read subsampling can be easily adjusted by the user.
+**lohtrue/analysisrnaseq** is a lightweight RNA-seq pipeline designed for educational purposes, focusing on memory efficiency, fast runtime and reproducibility, so that in runs on standard laptops. Then pipeline takes a sample sheet of single- or paired-end FASTQ files, a reference genome and annotation as input and performs quality control, trimming, alignment to a reference genome, duplicate marking and gene level quantification. As an output it gives back a TPM expression table and a MultiQC report.
+
 
 <!-- TODO nf-core: 
    Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
