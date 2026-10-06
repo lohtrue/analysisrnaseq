@@ -132,5 +132,10 @@
         {
             "$ref": "#/$defs/generic_options"
         }
-    ]
+    ],
+    "properties": {
+        "subsample": {
+            "type": "string"
+        }
+    }
 }

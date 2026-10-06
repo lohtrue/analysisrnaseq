@@ -3,7 +3,9 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+include { FQ_SUBSAMPLE           } from '../modules/nf-core/fq/subsample/main'
 include { FASTQC                 } from '../modules/nf-core/fastqc/main'
+include { FASTP                  } from '../modules/nf-core/fastp/main'
 include { MULTIQC                } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -29,11 +31,37 @@ workflow ANALYSISRNASEQ {
 
     def ch_versions = channel.empty()
     def ch_multiqc_files = channel.empty()
+
     //
-    // MODULE: Run FastQC
+    // MODULE: Subsample reads (optional, only if --subsample is set)
+    // All following steps use ch_reads (subsampled reads or all reads)
     //
-    FASTQC(ch_samplesheet)
+
+    def ch_reads = ch_samplesheet
+    if (params.subsample) {
+        FQ_SUBSAMPLE(ch_samplesheet)
+        ch_reads = FQ_SUBSAMPLE.out.fastq
+    }
+
+    //
+    // MODULE: Run FastQC (quality control of raw reads)
+    //
+    FASTQC(ch_reads)
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
+
+    //
+    // MODULE: Run fastp (adapter and quality trimming)
+    //
+    FASTP(
+        ch_reads.map { meta, reads -> [ meta, reads, [] ] }, // [] = no adapter file, fastp detects adapters automatically
+        false,  // discard_trimmed_pass: keep the trimmed reads
+        false,  // save_trimmed_fail: do not save reads that fail filtering
+        false   // save_merged: do not merge paired-end reads
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.json.map{ _meta, file -> file })
+
+    // trimmed reads for the next step (alignment)
+    def ch_trimmed_reads = FASTP.out.reads
 
     //
     // Collate and save software versions
@@ -90,8 +118,10 @@ workflow ANALYSISRNASEQ {
             ]
         }
     )
-    emit:multiqc_report = MULTIQC.out.report.map { _meta, report -> [report] }.toList() // channel: /path/to/multiqc_report.html
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
+
+    emit:
+    multiqc_report = MULTIQC.out.report.map { _meta, report -> [report] }.toList() // channel: /path/to/multiqc_report.html
+    versions       = ch_versions                                                    // channel: [ path(versions.yml) ]
 }
 
 /*

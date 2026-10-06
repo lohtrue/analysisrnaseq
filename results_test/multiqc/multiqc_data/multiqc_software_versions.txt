@@ -1,0 +1,5 @@
+Sample	fastp	fastqc	fq	lohtrue/analysisrnaseq	Nextflow
+FQ_SUBSAMPLE			0.12.0		
+FastQC		0.12.1			
+Workflow				v1.0.0dev	26.04.6
+fastp	1.3.6				
