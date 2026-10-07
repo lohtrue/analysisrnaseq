@@ -1,0 +1,6 @@
+Module	Section	Sample Name	Source
+fastp	all_sections	SAMPLE_PAIRED_END	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/7/SAMPLE_PAIRED_END.fastp.json
+fastp	all_sections	SAMPLE_SINGLE_END	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/3/SAMPLE_SINGLE_END.fastp.json
+FastQC	all_sections	SAMPLE_PAIRED_END_1	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/5/SAMPLE_PAIRED_END_1_fastqc.zip
+FastQC	all_sections	SAMPLE_PAIRED_END_2	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/6/SAMPLE_PAIRED_END_2_fastqc.zip
+FastQC	all_sections	SAMPLE_SINGLE_END	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/4/SAMPLE_SINGLE_END_fastqc.zip

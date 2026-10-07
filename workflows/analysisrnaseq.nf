@@ -3,8 +3,13 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+include { FQ_SUBSAMPLE           } from '../modules/nf-core/fq/subsample/main'
 include { FASTQC                 } from '../modules/nf-core/fastqc/main'
+include { FASTP                  } from '../modules/nf-core/fastp/main'
 include { MULTIQC                } from '../modules/nf-core/multiqc/main'
+include { HISAT2_EXTRACTSPLICESITES } from '../modules/nf-core/hisat2/extractsplicesites/main'
+include { HISAT2_BUILD              } from '../modules/nf-core/hisat2/build/main'
+include { HISAT2_ALIGN              } from '../modules/nf-core/hisat2/align/main'
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -29,11 +34,82 @@ workflow ANALYSISRNASEQ {
 
     def ch_versions = channel.empty()
     def ch_multiqc_files = channel.empty()
+
     //
-    // MODULE: Run FastQC
+    // MODULE: Subsample reads (optional, only if --subsample is set)
+    // All following steps use ch_reads (subsampled reads or all reads)
     //
-    FASTQC(ch_samplesheet)
+
+    def ch_reads = ch_samplesheet
+    if (params.subsample) {
+        FQ_SUBSAMPLE(ch_samplesheet)
+        ch_reads = FQ_SUBSAMPLE.out.fastq
+    }
+
+    //
+    // MODULE: Run FastQC (quality control of raw reads)
+    //
+    FASTQC(ch_reads)
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
+
+    //
+    // MODULE: Run fastp (adapter and quality trimming)
+    //
+    FASTP(
+        ch_reads.map { meta, reads -> [ meta, reads, [] ] }, // [] = no adapter file, fastp detects adapters automatically
+        false,  // discard_trimmed_pass: keep the trimmed reads
+        false,  // save_trimmed_fail: do not save reads that fail filtering
+        false   // save_merged: do not merge paired-end reads
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.json.map{ _meta, file -> file })
+
+    // trimmed reads for the next step (alignment)
+    def ch_trimmed_reads = FASTP.out.reads
+
+
+        //
+    // Reference files (genome and annotation)
+    //
+    def ch_fasta = channel.value([ [id: 'genome'], file(params.fasta, checkIfExists: true) ])
+    def ch_gtf   = channel.value([ [id: 'genome'], file(params.gtf,   checkIfExists: true) ])
+
+    //
+    // MODULE: Extract splice sites from the GTF (needed for spliced RNA-seq reads)
+    //
+    HISAT2_EXTRACTSPLICESITES(ch_gtf)
+    def ch_splicesites = HISAT2_EXTRACTSPLICESITES.out.txt.first()
+
+    //
+    // MODULE: Build HISAT2 index (only if no prebuilt index is given)
+    //
+    def ch_hisat2_index = channel.empty()
+    if (params.hisat2_index) {
+        ch_hisat2_index = channel.value([ [id: 'genome'], file(params.hisat2_index, checkIfExists: true) ])
+    } else {
+        HISAT2_BUILD(
+            ch_fasta
+                .combine(ch_gtf)
+                .combine(ch_splicesites)
+                .map { meta, fasta, _meta2, gtf, _meta3, splicesites -> [ meta, fasta, gtf, splicesites ] },
+            '200.GB' 
+        )
+        ch_hisat2_index = HISAT2_BUILD.out.index.first()
+    }
+
+    //
+    // MODULE: Align trimmed reads with HISAT2
+    //
+    HISAT2_ALIGN(
+        ch_trimmed_reads,   // trimmed reads from fastp
+        ch_hisat2_index,    // HISAT2 index
+        ch_splicesites,     // known splice sites
+        false               // save_unaligned: do not save unmapped reads
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(HISAT2_ALIGN.out.summary.map{ _meta, file -> file })
+
+    // aligned reads (BAM) for the next step (mark duplicates)
+    def ch_bam = HISAT2_ALIGN.out.bam
+
 
     //
     // Collate and save software versions
@@ -90,8 +166,10 @@ workflow ANALYSISRNASEQ {
             ]
         }
     )
-    emit:multiqc_report = MULTIQC.out.report.map { _meta, report -> [report] }.toList() // channel: /path/to/multiqc_report.html
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
+
+    emit:
+    multiqc_report = MULTIQC.out.report.map { _meta, report -> [report] }.toList() // channel: /path/to/multiqc_report.html
+    versions       = ch_versions                                                    // channel: [ path(versions.yml) ]
 }
 
 /*

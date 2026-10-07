@@ -1,0 +1,52 @@
+Detecting adapter sequence for read1...
+No adapter detected for read1
+
+Detecting adapter sequence for read2...
+No adapter detected for read2
+
+Read1 before filtering:
+total reads: 5034
+total bases: 755100
+Q20 bases: 711292(94.1984%)
+Q30 bases: 665053(88.0748%)
+Q40 bases: 489386(64.8108%)
+
+Read2 before filtering:
+total reads: 5034
+total bases: 755100
+Q20 bases: 654544(86.6831%)
+Q30 bases: 552458(73.1636%)
+Q40 bases: 334753(44.3323%)
+
+Read1 after filtering:
+total reads: 4597
+total bases: 640535
+Q20 bases: 615878(96.1506%)
+Q30 bases: 581967(90.8564%)
+Q40 bases: 433688(67.7072%)
+
+Read2 after filtering:
+total reads: 4597
+total bases: 640535
+Q20 bases: 579143(90.4155%)
+Q30 bases: 497934(77.7372%)
+Q40 bases: 304068(47.4709%)
+
+Filtering result:
+reads passed filter: 9194
+reads failed due to low quality: 874
+reads failed due to too many N: 0
+reads failed due to too short: 0
+reads failed due to adapter dimer: 0
+reads with adapter trimmed: 2806
+bases trimmed due to adapters: 98380
+
+Duplication rate: 0.0993246%
+
+Insert size peak (evaluated by paired-end reads): 145
+
+JSON report: SAMPLE_PAIRED_END.fastp.json
+HTML report: SAMPLE_PAIRED_END.fastp.html
+
+fastp --in1 SAMPLE_PAIRED_END_R1.fastq.gz --in2 SAMPLE_PAIRED_END_R2.fastq.gz --out1 SAMPLE_PAIRED_END_R1.fastp.fastq.gz --out2 SAMPLE_PAIRED_END_R2.fastp.fastq.gz --json SAMPLE_PAIRED_END.fastp.json --html SAMPLE_PAIRED_END.fastp.html --thread 4 --detect_adapter_for_pe 
+fastp v1.3.6, time used: 1 seconds
