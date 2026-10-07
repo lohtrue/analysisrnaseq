@@ -20,6 +20,10 @@ PICARD_MARKDUPLICATES:
   picard: 3.5.0
 SAMTOOLS_SORT:
   samtools: 1.24
+SUBREAD_FEATURECOUNTS:
+  subread: 2.1.1
+TPM_TABLE:
+  python: 3.14.5
 Workflow:
     lohtrue/analysisrnaseq: v1.0.0dev
     Nextflow: 26.04.6

@@ -36,43 +36,63 @@ Two examples of short summaries:
 
 Tools used in the report:
 
-1. Picard
+1. featureCounts
+Description: <p>Counts mapped reads for genomic features such as genes, exons, promoter, gene bodies, genomic bins and chromosomal locations.</p>
+Links: http://subread.sourceforge.net/
+
+----------------------
+
+2. Picard
 Description: <p>Tools for manipulating high-throughput sequencing data.</p>
 Links: http://broadinstitute.github.io/picard/
 
 ----------------------
 
-2. Bowtie 2 / HiSAT2
+3. Bowtie 2 / HiSAT2
 Description: <p>Results from both Bowtie 2 and HISAT2, tools for aligning reads against a reference genome.</p>
 Links: http://bowtie-bio.sourceforge.net/bowtie2/, https://ccb.jhu.edu/software/hisat2/
 
 ----------------------
 
-3. fastp
+4. fastp
 Description: <p>All-in-one FASTQ preprocessor (QC, adapters, trimming, filtering, splitting...).</p>
 Links: https://github.com/OpenGene/fastp
 
 ----------------------
 
-4. FastQC
+5. FastQC
 Description: <p>Quality control tool for high throughput sequencing data.</p>
 Links: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/
 
 ----------------------
 
-5. lohtrue/analysisrnaseq Methods Description
+6. lohtrue/analysisrnaseq Methods Description
 Description: <p>Suggested text and references to use when describing pipeline usage within the methods section of a publication.</p>
 Links: https://github.com/lohtrue/analysisrnaseq
 
 ----------------------
 
-6. lohtrue/analysisrnaseq Workflow Summary
+7. lohtrue/analysisrnaseq Workflow Summary
 Description: <ul>
 <li>this information is collected when the pipeline is started.</li>
 </ul>
 Links: https://github.com/lohtrue/analysisrnaseq
 
 ----------------------
+
+----------------------
+
+Tool: featureCounts
+Section: Assignments
+Title: featureCounts: Assignments
+
+Plot type: bar plot
+Values: # Reads
+
+|Sample|Assigned|Unassigned: Multi Mapping|Unassigned: No Features|
+|---|---|---|---|
+|SAMPLE_SINGLE_END|23|0|4|
+|SAMPLE_PAIRED_END|26|3|6|
 
 ----------------------
 
@@ -770,7 +790,7 @@ Section:
 <h4>Methods</h4>
 <p>Data was processed using lohtrue/analysisrnaseq v1.0.0dev  of the nf-core collection of workflows (<a href="https://doi.org/10.1038/s41587-020-0439-x">Ewels <em>et al.</em>, 2020</a>), utilising reproducible software environments from the Bioconda (<a href="https://doi.org/10.1038/s41592-018-0046-7">Grüning <em>et al.</em>, 2018</a>) and Biocontainers (<a href="https://doi.org/10.1093/bioinformatics/btx192">da Veiga Leprevost <em>et al.</em>, 2017</a>) projects.</p>
 <p>The pipeline was executed with Nextflow v26.04.6 (<a href="https://doi.org/10.1038/nbt.3820">Di Tommaso <em>et al.</em>, 2017</a>) with the following command:</p>
-<pre><code>nextflow run . -profile test,docker --outdir results_test -resume</code></pre>
+<pre><code>nextflow run . -profile test,docker --outdir results_test</code></pre>
 <p></p>
 <h4>References</h4>
 <ul>
@@ -801,7 +821,7 @@ Section:
 </dl>
 <p style="font-size:110%"><b>Generic options</b></p>
 <dl class="dl-horizontal">
-    <dt>trace_report_suffix</dt><dd><samp>2026-10-07_13-31-24</samp></dd>
+    <dt>trace_report_suffix</dt><dd><samp>2026-10-07_15-12-57</samp></dd>
 </dl>
 <p style="font-size:110%"><b>Other parameters</b></p>
 <dl class="dl-horizontal">
@@ -816,7 +836,7 @@ Section:
     <dt>launchDir</dt><dd><samp>/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq</samp></dd>
     <dt>profile</dt><dd><samp>test,docker</samp></dd>
     <dt>projectDir</dt><dd><samp>/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq</samp></dd>
-    <dt>runName</dt><dd><samp>adoring_chandrasekhar</samp></dd>
+    <dt>runName</dt><dd><samp>silly_angela</samp></dd>
     <dt>userName</dt><dd><samp>pia</samp></dd>
     <dt>workDir</dt><dd><samp>/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq/work</samp></dd>
 </dl>

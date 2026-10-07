@@ -49,4 +49,4 @@ JSON report: SAMPLE_PAIRED_END.fastp.json
 HTML report: SAMPLE_PAIRED_END.fastp.html
 
 fastp --in1 SAMPLE_PAIRED_END_R1.fastq.gz --in2 SAMPLE_PAIRED_END_R2.fastq.gz --out1 SAMPLE_PAIRED_END_R1.fastp.fastq.gz --out2 SAMPLE_PAIRED_END_R2.fastp.fastq.gz --json SAMPLE_PAIRED_END.fastp.json --html SAMPLE_PAIRED_END.fastp.html --thread 4 --detect_adapter_for_pe 
-fastp v1.3.6, time used: 2 seconds
+fastp v1.3.6, time used: 1 seconds
