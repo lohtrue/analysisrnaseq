@@ -15,6 +15,8 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_analysisrnaseq_pipeline'
+include { SAMTOOLS_SORT             } from '../modules/nf-core/samtools/sort/main'
+include { PICARD_MARKDUPLICATES     } from '../modules/nf-core/picard/markduplicates/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,19 +76,19 @@ workflow ANALYSISRNASEQ {
     def ch_fasta = channel.value([ [id: 'genome'], file(params.fasta, checkIfExists: true) ])
     if (params.fasta.endsWith('.gz')) {
         GUNZIP_FASTA(ch_fasta)
-        ch_fasta = GUNZIP_FASTA.out.gunzip.first()
+        ch_fasta = GUNZIP_FASTA.out.gunzip
     }
     def ch_gtf = channel.value([ [id: 'genome'], file(params.gtf, checkIfExists: true) ])
     if (params.gtf.endsWith('.gz')) {
         GUNZIP_GTF(ch_gtf)
-        ch_gtf = GUNZIP_GTF.out.gunzip.first()
+        ch_gtf = GUNZIP_GTF.out.gunzip
     }
 
     //
     // MODULE: Extract splice sites from the GTF (needed for spliced RNA-seq reads)
     //
     HISAT2_EXTRACTSPLICESITES(ch_gtf)
-    def ch_splicesites = HISAT2_EXTRACTSPLICESITES.out.txt.first()
+    def ch_splicesites = HISAT2_EXTRACTSPLICESITES.out.txt
 
     //
     // MODULE: Build HISAT2 index (only if no prebuilt index is given)
@@ -119,6 +121,27 @@ workflow ANALYSISRNASEQ {
     // aligned reads (BAM) for the next step (mark duplicates)
     def ch_bam = HISAT2_ALIGN.out.bam
 
+        //
+    // MODULE: Sort BAM files by genomic coordinate (required by Picard)
+    //
+    SAMTOOLS_SORT(
+        ch_bam,
+        [ [:], [], [] ],   // no reference needed for BAM output
+        ''                 // no index here, Picard creates it after marking
+    )
+    def ch_bam_sorted = SAMTOOLS_SORT.out.bam
+
+    //
+    // MODULE: Mark duplicate reads (duplicates are flagged, not removed)
+    //
+    PICARD_MARKDUPLICATES(
+        ch_bam_sorted,
+        [ [:], [], [] ]    // no reference needed for BAM input
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.metrics.map{ _meta, file -> file })
+
+    // marked BAM (+ index) for the next step (quantification)
+    def ch_bam_markdup = PICARD_MARKDUPLICATES.out.bam
 
     //
     // Collate and save software versions

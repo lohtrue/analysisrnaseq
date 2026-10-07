@@ -36,37 +36,74 @@ Two examples of short summaries:
 
 Tools used in the report:
 
-1. Bowtie 2 / HiSAT2
+1. Picard
+Description: <p>Tools for manipulating high-throughput sequencing data.</p>
+Links: http://broadinstitute.github.io/picard/
+
+----------------------
+
+2. Bowtie 2 / HiSAT2
 Description: <p>Results from both Bowtie 2 and HISAT2, tools for aligning reads against a reference genome.</p>
 Links: http://bowtie-bio.sourceforge.net/bowtie2/, https://ccb.jhu.edu/software/hisat2/
 
 ----------------------
 
-2. fastp
+3. fastp
 Description: <p>All-in-one FASTQ preprocessor (QC, adapters, trimming, filtering, splitting...).</p>
 Links: https://github.com/OpenGene/fastp
 
 ----------------------
 
-3. FastQC
+4. FastQC
 Description: <p>Quality control tool for high throughput sequencing data.</p>
 Links: http://www.bioinformatics.babraham.ac.uk/projects/fastqc/
 
 ----------------------
 
-4. lohtrue/analysisrnaseq Methods Description
+5. lohtrue/analysisrnaseq Methods Description
 Description: <p>Suggested text and references to use when describing pipeline usage within the methods section of a publication.</p>
 Links: https://github.com/lohtrue/analysisrnaseq
 
 ----------------------
 
-5. lohtrue/analysisrnaseq Workflow Summary
+6. lohtrue/analysisrnaseq Workflow Summary
 Description: <ul>
 <li>this information is collected when the pipeline is started.</li>
 </ul>
 Links: https://github.com/lohtrue/analysisrnaseq
 
 ----------------------
+
+----------------------
+
+Tool: Picard
+Section: Mark Duplicates
+Section description: Number of reads, categorised by duplication state. <strong>Pair counts are doubled</strong> - see help text for details.
+Section help text: The table in the Picard metrics file contains some columns referring
+read pairs and some referring to single reads.
+To make the numbers in this plot sum correctly, values referring to pairs are 
+doubled
+according to the scheme below:
+<ul>
+<li><code>READS_IN_DUPLICATE_PAIRS = 2 * READ_PAIR_DUPLICATES</code></li>
+<li><code>READS_IN_UNIQUE_PAIRS = 2 * (READ_PAIRS_EXAMINED - READ_PAIR_DUPLICATES)</code></li>
+<li><code>READS_IN_UNIQUE_UNPAIRED = UNPAIRED_READS_EXAMINED - 
+UNPAIRED_READ_DUPLICATES</code></li>
+<li><code>READS_IN_DUPLICATE_PAIRS_OPTICAL = 2 * READ_PAIR_OPTICAL_DUPLICATES</code></li>
+<li><code>READS_IN_DUPLICATE_PAIRS_NONOPTICAL = READS_IN_DUPLICATE_PAIRS - 
+READS_IN_DUPLICATE_PAIRS_OPTICAL</code></li>
+<li><code>READS_IN_DUPLICATE_UNPAIRED = UNPAIRED_READ_DUPLICATES</code></li>
+<li><code>READS_UNMAPPED = UNMAPPED_READS</code></li>
+</ul>
+Title: Picard: Deduplication Stats
+
+Plot type: bar plot
+Values: # Reads
+
+|Sample|Unique Pairs|Unique Unpaired|
+|---|---|---|
+|SAMPLE_SINGLE_END|0%|100%|
+|SAMPLE_PAIRED_END|100%|0%|
 
 ----------------------
 
@@ -733,7 +770,7 @@ Section:
 <h4>Methods</h4>
 <p>Data was processed using lohtrue/analysisrnaseq v1.0.0dev  of the nf-core collection of workflows (<a href="https://doi.org/10.1038/s41587-020-0439-x">Ewels <em>et al.</em>, 2020</a>), utilising reproducible software environments from the Bioconda (<a href="https://doi.org/10.1038/s41592-018-0046-7">Grüning <em>et al.</em>, 2018</a>) and Biocontainers (<a href="https://doi.org/10.1093/bioinformatics/btx192">da Veiga Leprevost <em>et al.</em>, 2017</a>) projects.</p>
 <p>The pipeline was executed with Nextflow v26.04.6 (<a href="https://doi.org/10.1038/nbt.3820">Di Tommaso <em>et al.</em>, 2017</a>) with the following command:</p>
-<pre><code>nextflow run . -profile test,docker --outdir results_test</code></pre>
+<pre><code>nextflow run . -profile test,docker --outdir results_test -resume</code></pre>
 <p></p>
 <h4>References</h4>
 <ul>
@@ -764,7 +801,7 @@ Section:
 </dl>
 <p style="font-size:110%"><b>Generic options</b></p>
 <dl class="dl-horizontal">
-    <dt>trace_report_suffix</dt><dd><samp>2026-10-07_13-03-45</samp></dd>
+    <dt>trace_report_suffix</dt><dd><samp>2026-10-07_13-31-24</samp></dd>
 </dl>
 <p style="font-size:110%"><b>Other parameters</b></p>
 <dl class="dl-horizontal">
@@ -779,7 +816,7 @@ Section:
     <dt>launchDir</dt><dd><samp>/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq</samp></dd>
     <dt>profile</dt><dd><samp>test,docker</samp></dd>
     <dt>projectDir</dt><dd><samp>/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq</samp></dd>
-    <dt>runName</dt><dd><samp>small_wright</samp></dd>
+    <dt>runName</dt><dd><samp>adoring_chandrasekhar</samp></dd>
     <dt>userName</dt><dd><samp>pia</samp></dd>
     <dt>workDir</dt><dd><samp>/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq/work</samp></dd>
 </dl>
