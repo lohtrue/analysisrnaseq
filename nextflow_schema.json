@@ -135,10 +135,10 @@
     ],
     "properties": {
         "subsample": {
-    "type": "number",
-    "minimum": 0,
-    "maximum": 1
-    },
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        },
         "fasta": {
             "type": "string"
         },
@@ -146,6 +146,12 @@
             "type": "string"
         },
         "hisat2_index": {
+            "type": "string"
+        },
+        "config_profile_name": {
+            "type": "string"
+        },
+        "config_profile_description": {
             "type": "string"
         }
     }
