@@ -135,8 +135,10 @@
     ],
     "properties": {
         "subsample": {
-            "type": "string"
-        },
+    "type": "number",
+    "minimum": 0,
+    "maximum": 1
+    },
         "fasta": {
             "type": "string"
         },

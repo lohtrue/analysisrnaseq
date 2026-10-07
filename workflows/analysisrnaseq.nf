@@ -10,6 +10,7 @@ include { MULTIQC                } from '../modules/nf-core/multiqc/main'
 include { HISAT2_EXTRACTSPLICESITES } from '../modules/nf-core/hisat2/extractsplicesites/main'
 include { HISAT2_BUILD              } from '../modules/nf-core/hisat2/build/main'
 include { HISAT2_ALIGN              } from '../modules/nf-core/hisat2/align/main'
+include { GUNZIP as GUNZIP_FASTA; GUNZIP as GUNZIP_GTF } from '../modules/nf-core/gunzip/main'
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -71,7 +72,15 @@ workflow ANALYSISRNASEQ {
     // Reference files (genome and annotation)
     //
     def ch_fasta = channel.value([ [id: 'genome'], file(params.fasta, checkIfExists: true) ])
-    def ch_gtf   = channel.value([ [id: 'genome'], file(params.gtf,   checkIfExists: true) ])
+    if (params.fasta.endsWith('.gz')) {
+        GUNZIP_FASTA(ch_fasta)
+        ch_fasta = GUNZIP_FASTA.out.gunzip.first()
+    }
+    def ch_gtf = channel.value([ [id: 'genome'], file(params.gtf, checkIfExists: true) ])
+    if (params.gtf.endsWith('.gz')) {
+        GUNZIP_GTF(ch_gtf)
+        ch_gtf = GUNZIP_GTF.out.gunzip.first()
+    }
 
     //
     // MODULE: Extract splice sites from the GTF (needed for spliced RNA-seq reads)

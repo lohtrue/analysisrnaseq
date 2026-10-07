@@ -20,6 +20,11 @@
                         "git_sha": "6d46786420b4d7bc88eba026eb389c0c5535d120",
                         "installed_by": ["modules"]
                     },
+                    "gunzip": {
+                        "branch": "master",
+                        "git_sha": "0902eac3012baaf4f9ab6513c8c55acc9353c96c",
+                        "installed_by": ["modules"]
+                    },
                     "hisat2/align": {
                         "branch": "master",
                         "git_sha": "7ff2dbaefb93fdd3825b7bff1d86d2f3c7e946f5",
