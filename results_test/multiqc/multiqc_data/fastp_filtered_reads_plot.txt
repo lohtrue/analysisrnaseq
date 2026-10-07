@@ -1,3 +1,0 @@
-Sample	Passed Filter	Low Quality	Too Many N	Low Complexity	Too Short	Too Long
-SAMPLE_PAIRED_END	1766.0	184.0	0.0	nan	0.0	0.0
-SAMPLE_SINGLE_END	949.0	26.0	0.0	nan	0.0	0.0
