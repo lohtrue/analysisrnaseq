@@ -17,6 +17,9 @@ include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pi
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_analysisrnaseq_pipeline'
 include { SAMTOOLS_SORT             } from '../modules/nf-core/samtools/sort/main'
 include { PICARD_MARKDUPLICATES     } from '../modules/nf-core/picard/markduplicates/main'
+include { SUBREAD_FEATURECOUNTS     } from '../modules/nf-core/subread/featurecounts/main'
+include { TPM_TABLE                 } from '../modules/local/tpm_table/main'
+include { PLOT_TPM                  } from '../modules/local/plot_tpm/main' 
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -143,6 +146,31 @@ workflow ANALYSISRNASEQ {
     // marked BAM (+ index) for the next step (quantification)
     def ch_bam_markdup = PICARD_MARKDUPLICATES.out.bam
 
+    //
+    // MODULE: Count reads per gene (featureCounts)
+    // combine() attaches the single GTF file to every BAM -> [ meta, bam, gtf ]
+    // Strandedness and single/paired-end are read from meta by the module
+    //
+    SUBREAD_FEATURECOUNTS(
+        ch_bam_markdup.combine( ch_gtf.map { _meta, gtf -> gtf } )
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(SUBREAD_FEATURECOUNTS.out.summary.map{ _meta, file -> file })
+
+        //
+    // MODULE (local): Convert counts to TPM and merge all samples into one table
+    // collect() waits until all samples are counted and passes all files at once
+    //
+    TPM_TABLE(
+        SUBREAD_FEATURECOUNTS.out.counts.map { _meta, file -> file }.collect()
+    )
+
+    //
+    // MODULE (local): Plot TPM overview (top genes, distribution, sample correlation)
+    // Files ending in _mqc.png are picked up by MultiQC and shown in the report
+    //
+    PLOT_TPM(TPM_TABLE.out.tpm)
+    ch_multiqc_files = ch_multiqc_files.mix(PLOT_TPM.out.plots)
+    
     //
     // Collate and save software versions
     //
