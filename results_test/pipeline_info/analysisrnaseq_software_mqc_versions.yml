@@ -4,6 +4,18 @@ FASTQC:
   fastqc: 0.12.1
 FQ_SUBSAMPLE:
   fq: 0.12.0
+GUNZIP_FASTA:
+  gunzip: 1.13
+GUNZIP_GTF:
+  gunzip: 1.13
+HISAT2_ALIGN:
+  hisat2: 2.2.3
+  samtools: 1.24
+HISAT2_BUILD:
+  hisat2: 2.2.3
+HISAT2_EXTRACTSPLICESITES:
+  hisat2: 2.2.3
+  samtools: 1.24
 Workflow:
     lohtrue/analysisrnaseq: v1.0.0dev
     Nextflow: 26.04.6

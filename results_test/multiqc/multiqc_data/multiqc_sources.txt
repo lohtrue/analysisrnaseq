@@ -1,6 +1,8 @@
 Module	Section	Sample Name	Source
-fastp	all_sections	SAMPLE_PAIRED_END	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/7/SAMPLE_PAIRED_END.fastp.json
-fastp	all_sections	SAMPLE_SINGLE_END	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/3/SAMPLE_SINGLE_END.fastp.json
-FastQC	all_sections	SAMPLE_PAIRED_END_1	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/5/SAMPLE_PAIRED_END_1_fastqc.zip
-FastQC	all_sections	SAMPLE_PAIRED_END_2	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/6/SAMPLE_PAIRED_END_2_fastqc.zip
-FastQC	all_sections	SAMPLE_SINGLE_END	/home/h-loh/analysisrnaseq/work/30/64a2c48486a7a20e6beaf0a73495ae/4/SAMPLE_SINGLE_END_fastqc.zip
+Bowtie 2 / HiSAT2	all_sections	SAMPLE_PAIRED_END	/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq/work/ce/9eaff58fcb7d5ed0d82004920743c9/8/SAMPLE_PAIRED_END.hisat2.summary.log
+Bowtie 2 / HiSAT2	all_sections	SAMPLE_SINGLE_END	/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq/work/ce/9eaff58fcb7d5ed0d82004920743c9/9/SAMPLE_SINGLE_END.hisat2.summary.log
+fastp	all_sections	SAMPLE_PAIRED_END	/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq/work/ce/9eaff58fcb7d5ed0d82004920743c9/5/SAMPLE_PAIRED_END.fastp.json
+fastp	all_sections	SAMPLE_SINGLE_END	/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq/work/ce/9eaff58fcb7d5ed0d82004920743c9/4/SAMPLE_SINGLE_END.fastp.json
+FastQC	all_sections	SAMPLE_PAIRED_END_1	/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq/work/ce/9eaff58fcb7d5ed0d82004920743c9/6/SAMPLE_PAIRED_END_1_fastqc.zip
+FastQC	all_sections	SAMPLE_PAIRED_END_2	/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq/work/ce/9eaff58fcb7d5ed0d82004920743c9/7/SAMPLE_PAIRED_END_2_fastqc.zip
+FastQC	all_sections	SAMPLE_SINGLE_END	/Users/pia/Documents/Universitaet_Tuebingen/2_Semester/Computational_Workflows/lohtrue-analysisrnaseq/work/ce/9eaff58fcb7d5ed0d82004920743c9/3/SAMPLE_SINGLE_END_fastqc.zip
