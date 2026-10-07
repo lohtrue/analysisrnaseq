@@ -19,7 +19,7 @@ include { SAMTOOLS_SORT             } from '../modules/nf-core/samtools/sort/mai
 include { PICARD_MARKDUPLICATES     } from '../modules/nf-core/picard/markduplicates/main'
 include { SUBREAD_FEATURECOUNTS     } from '../modules/nf-core/subread/featurecounts/main'
 include { TPM_TABLE                 } from '../modules/local/tpm_table/main'
-
+include { PLOT_TPM                  } from '../modules/local/plot_tpm/main' 
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -164,6 +164,13 @@ workflow ANALYSISRNASEQ {
         SUBREAD_FEATURECOUNTS.out.counts.map { _meta, file -> file }.collect()
     )
 
+    //
+    // MODULE (local): Plot TPM overview (top genes, distribution, sample correlation)
+    // Files ending in _mqc.png are picked up by MultiQC and shown in the report
+    //
+    PLOT_TPM(TPM_TABLE.out.tpm)
+    ch_multiqc_files = ch_multiqc_files.mix(PLOT_TPM.out.plots)
+    
     //
     // Collate and save software versions
     //
