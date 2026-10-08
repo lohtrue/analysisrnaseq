@@ -5,6 +5,30 @@
     "description": "A nextflow pipeline for quality control, alignment and further processing of RNA-seq data.",
     "type": "object",
     "$defs": {
+        "resource_options": {
+            "title": "Resource options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "max_time": {
+                    "type": "string",
+                    "default": "6.h",
+                    "description": "Maximum runtime of a single process."
+                },
+                "max_memory": {
+                    "type": "string",
+                    "default": "6.GB",
+                    "description": "Maximum memory a single process may use."
+                },
+                "max_cpus": {
+                    "type": "integer",
+                    "default": 4,
+                    "description": "Maximum number of CPUs a single process may use",
+                    "minimum": 1
+                }
+            }
+        },
         "input_output_options": {
             "title": "Input/output options",
             "type": "object",
@@ -126,6 +150,9 @@
         }
     },
     "allOf": [
+        {
+            "$ref": "#/$defs/resource_options"
+        },
         {
             "$ref": "#/$defs/input_output_options"
         },
