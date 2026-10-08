@@ -4,93 +4,74 @@
 
 ## Introduction
 
-<!-- TODO nf-core: Add documentation about anything specific to running your pipeline. For general topics, please point to (and add to) the main nf-core website. -->
+lohtrue/analysisrnaseq is a lightweight RNA-analysis pipeline that turns sequencing reads into a table of gene expression values. For each sample of the samplesheet, every read gets quality-checked, trimmed and aligned to a reference genome. The reads per gene get counted after marking duplicate reads. Finally, the gene counts are converted to TPM(transcripts per million) and summarized in a table, as well as visualized with overview plots and a MultiQC report summarizes the QC-results.
+
+The pipeline is designed for educational purposes with the goal of easy execution on laptops with limited resources. To run lohtrue/analysisrnaseq Nextflow, Docker, a samplesheet listing the FASTQ-files, a reference genome (FASTA) and an annotation file (GTF) are needed.
 
 ## Samplesheet input
 
-You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
+Before running the pipeline, a samplesheets with information about the samples (FASTQ-files) needs to be created. It has to be a comma-separated file with 4 columns and a header row as shown in the examples below. To specify the location of the samplesheet the parameter --input must be used:
 
 ```bash
 --input '[path to samplesheet file]'
 ```
+The samplesheet must contain the following 4 columns: 
 
-### Multiple runs of the same sample
-
-The `sample` identifiers have to be the same when you have re-sequenced the same sample more than once e.g. to increase sequencing depth. The pipeline will concatenate the raw reads before performing any downstream analysis. Below is an example for the same sample sequenced across 3 lanes:
-
-```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L003_R1_001.fastq.gz,AEG588A1_S1_L003_R2_001.fastq.gz
-CONTROL_REP1,AEG588A1_S1_L004_R1_001.fastq.gz,AEG588A1_S1_L004_R2_001.fastq.gz
-```
-
-### Full samplesheet
-
-The pipeline will auto-detect whether a sample is single- or paired-end using the information provided in the samplesheet. The samplesheet can have as many columns as you desire, however, there is a strict requirement for the first 3 columns to match those defined in the table below.
-
-A final samplesheet file consisting of both single- and paired-end data may look something like the one below. This is for 6 samples, where `TREATMENT_REP3` has been sequenced twice.
-
-```csv title="samplesheet.csv"
-sample,fastq_1,fastq_2
-CONTROL_REP1,AEG588A1_S1_L002_R1_001.fastq.gz,AEG588A1_S1_L002_R2_001.fastq.gz
-CONTROL_REP2,AEG588A2_S2_L002_R1_001.fastq.gz,AEG588A2_S2_L002_R2_001.fastq.gz
-CONTROL_REP3,AEG588A3_S3_L002_R1_001.fastq.gz,AEG588A3_S3_L002_R2_001.fastq.gz
-TREATMENT_REP1,AEG588A4_S4_L003_R1_001.fastq.gz,
-TREATMENT_REP2,AEG588A5_S5_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L003_R1_001.fastq.gz,
-TREATMENT_REP3,AEG588A6_S6_L004_R1_001.fastq.gz,
-```
-
-| Column    | Description                                                                                                                                                                            |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name. This entry will be identical for multiple sequencing libraries/runs from the same sample. Spaces in sample names are automatically converted to underscores (`_`). |
-| `fastq_1` | Full path to FastQ file for Illumina short reads 1. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
-| `fastq_2` | Full path to FastQ file for Illumina short reads 2. File has to be gzipped and have the extension ".fastq.gz" or ".fq.gz".                                                             |
+| Column         | Description |
+| -------------- | ----------- |
+| `sample`       | Sample name without spaces. Used as the sample ID in all output files and as the column name in the TPM table. |
+| `fastq_1`      | Path to the (gzipped) FASTQ file with read 1 (`.fastq.gz` or `.fq.gz`). |
+| `fastq_2`      | Path to the (gzipped) FASTQ file with read 2. Leave empty for single-end data. |
+| `strandedness` | Strandedness: `forward`, `reverse` or `unstranded`. Needed for correct alignmentand counting . |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
 ## Running the pipeline
 
-The typical command for running the pipeline is as follows:
+To check that everything is set up correctly, you can first run the pipeline on the small test dataset: 
 
 ```bash
-nextflow run lohtrue/analysisrnaseq --input ./samplesheet.csv --outdir ./results  -profile docker
+nextflow run lohtrue/analysisrnaseq -r dev -profile test,docker --outdir results_test
 ```
 
-This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
-
-Note that the pipeline will create the following files in your working directory:
+A typical command for your own data looks like this:
 
 ```bash
-work                # Directory containing the nextflow working files
-<OUTDIR>            # Finished results in specified location (defined with --outdir)
-.nextflow_log       # Log file from Nextflow
-# Other nextflow hidden files, eg. history of pipeline runs and old logs.
+nextflow run lohtrue/analysisrnaseq -r dev \
+    -profile docker \
+    --input samplesheet.csv \
+    --fasta genome.fa.gz \
+    --gtf annotation.gtf.gz \
+    --outdir results
 ```
 
-If you wish to repeatedly use the same parameters for multiple runs, rather than specifying each flag in the command, you can specify these in a params file.
-
-Pipeline settings can be provided in a `yaml` or `json` file via `-params-file <file>`.
-
-> [!WARNING]
-> Do not use `-c <file>` to specify parameters as this will result in errors. Custom config files specified with `-c` must only be used for [tuning process resource specifications](https://nf-co.re/docs/running/run-pipelines#configuring-pipelines), other infrastructural tweaks (such as output directories), or module arguments (args).
-
-The above pipeline run specified with a params file in yaml format:
+The pipeline creates the following files in your working directory:
 
 ```bash
-nextflow run lohtrue/analysisrnaseq -profile docker -params-file params.yaml
+work            # Intermediate files of all tasks (can be deleted after the run) 
+<OUTDIR>        # Final results (defined with --outdir)
+.nextflow.log   # Log file from Nextflow
 ```
 
-with:
+### Using a params file
+
+Instead of writing all parameters into the command, they can be stored in a YAML file and passed with `-params-file`. 
+
+```bash
+nextflow run lohtrue/analysisrnaseq -r dev -profile docker -params-file params.yaml
+```
 
 ```yaml title="params.yaml"
-input: './samplesheet.csv'
-outdir: './results/'
-<...>
+input: "samplesheet.csv"
+fasta: "genome.fa.gz"
+gtf: "annotation.gtf.gz"
+outdir: "results"
+subsample: 0.1
+max_memory: "6.GB"
 ```
 
-You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
+> [!WARNING]
+> Do not use `-c <file>` to set parameters. Config files given with `-c` should only be used for process settings such as tool arguments.
 
 ### Updating the pipeline
 
