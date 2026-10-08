@@ -1,3 +1,4 @@
 sample,fastq_1,fastq_2,strandedness
-SRX1603629,https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR319/007/SRR3192657/SRR3192657_1.fastq.gz,https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR319/007/SRR3192657/SRR3192657_2.fastq.gz,reverse
-SRX1603392,https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR319/008/SRR3192408/SRR3192408_1.fastq.gz,https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR319/008/SRR3192408/SRR3192408_2.fastq.gz,reverse
+WT_REP1,https://raw.githubusercontent.com/nf-core/test-datasets/rnaseq/testdata/GSE110004/SRR6357070_1.fastq.gz,https://raw.githubusercontent.com/nf-core/test-datasets/rnaseq/testdata/GSE110004/SRR6357070_2.fastq.gz,reverse
+WT_REP2,https://raw.githubusercontent.com/nf-core/test-datasets/rnaseq/testdata/GSE110004/SRR6357072_1.fastq.gz,https://raw.githubusercontent.com/nf-core/test-datasets/rnaseq/testdata/GSE110004/SRR6357072_2.fastq.gz,reverse
+RAP1_UNINDUCED_REP1,https://raw.githubusercontent.com/nf-core/test-datasets/rnaseq/testdata/GSE110004/SRR6357073_1.fastq.gz,,reverse
