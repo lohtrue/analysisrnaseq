@@ -2,9 +2,19 @@
 
 ## Introduction
 
-**lohtrue/analysisrnaseq** is a bioinformatics pipeline that ...
+**lohtrue/analysisrnaseq** is a lightweight RNA-seq pipeline designed for educational purposes, focusing on memory efficiency, fast runtime and reproducibility, so that in runs on standard laptops. Then pipeline takes a sample sheet of single- or paired-end FASTQ files, a reference genome and annotation as input and performs quality control, trimming, alignment to a reference genome, duplicate marking and gene level quantification. As an output it gives back a TPM expression table and a MultiQC report.
 
-<!-- TODO nf-core:
+##Pipeline Steps
+   >1.
+   >2. 
+   >3.
+   >4.
+   >5.
+
+![Metro map](docs/images/metro_map.drawio.svg)
+
+
+<!-- TODO nf-core: 
    Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
    major pipeline sections and the types of output it produces. You're giving an overview to someone new
    to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
