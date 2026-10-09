@@ -105,7 +105,7 @@ workflow ANALYSISRNASEQ {
                 .combine(ch_gtf)
                 .combine(ch_splicesites)
                 .map { meta, fasta, _meta2, gtf, _meta3, splicesites -> [ meta, fasta, gtf, splicesites ] },
-            '200.GB' 
+            '200.GB'  // min memory for building the index with splice sites
         )
         ch_hisat2_index = HISAT2_BUILD.out.index.first()
     }
