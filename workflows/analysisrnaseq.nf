@@ -15,8 +15,10 @@ include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { paramsSummaryMultiqc   } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_analysisrnaseq_pipeline'
+include { SAMTOOLS_FIXMATE          } from '../modules/nf-core/samtools/fixmate/main'
 include { SAMTOOLS_SORT             } from '../modules/nf-core/samtools/sort/main'
-include { PICARD_MARKDUPLICATES     } from '../modules/nf-core/picard/markduplicates/main'
+include { SAMTOOLS_FLAGSTAT         } from '../modules/nf-core/samtools/flagstat/main'
+include { SAMTOOLS_MARKDUP          } from '../modules/nf-core/samtools/markdup/main'
 include { SUBREAD_FEATURECOUNTS     } from '../modules/nf-core/subread/featurecounts/main'
 include { TPM_TABLE                 } from '../modules/local/tpm_table/main'
 include { PLOT_TPM                  } from '../modules/local/plot_tpm/main' 
@@ -121,31 +123,47 @@ workflow ANALYSISRNASEQ {
     )
     ch_multiqc_files = ch_multiqc_files.mix(HISAT2_ALIGN.out.summary.map{ _meta, file -> file })
 
-    // aligned reads (BAM) for the next step (mark duplicates)
+        // aligned reads (BAM) for the next step
     def ch_bam = HISAT2_ALIGN.out.bam
 
-        //
-    // MODULE: Sort BAM files by genomic coordinate (required by Picard)
+    //
+    // MODULE: Add mate information (fixmate -m), required by samtools markdup
+    // HISAT2 writes mates next to each other, so no name sorting is needed before
+    //
+    SAMTOOLS_FIXMATE(
+        ch_bam,
+        [ [:], [], [] ]    // no reference needed for BAM
+    )
+
+    //
+    // MODULE: Sort BAM files by genomic coordinate (required by samtools markdup)
     //
     SAMTOOLS_SORT(
-        ch_bam,
+        SAMTOOLS_FIXMATE.out.bam,
         [ [:], [], [] ],   // no reference needed for BAM output
-        ''                 // no index here, Picard creates it after marking
+        ''                 // no index needed
     )
     def ch_bam_sorted = SAMTOOLS_SORT.out.bam
 
     //
-    // MODULE: Mark duplicate reads (duplicates are flagged, not removed)
+    //MODULE: Mark duplicate reads (duplicates are flagged, not removed)
     //
-    PICARD_MARKDUPLICATES(
+    SAMTOOLS_MARKDUP(
         ch_bam_sorted,
-        [ [:], [], [] ]    // no reference needed for BAM input
+        [ [:], [], [] ]    // no reference needed for BAM
     )
-    ch_multiqc_files = ch_multiqc_files.mix(PICARD_MARKDUPLICATES.out.metrics.map{ _meta, file -> file })
 
-    // marked BAM (+ index) for the next step (quantification)
-    def ch_bam_markdup = PICARD_MARKDUPLICATES.out.bam
+    //marked BAM for the next step (quantification)
+    def ch_bam_markdup = SAMTOOLS_MARKDUP.out.bam
 
+    //
+    // MODULE: Read statistics of the marked BAM (incl. number of duplicates) for MultiQC
+    // The module also expects an index, which flagstat does not need -> []
+    //
+    SAMTOOLS_FLAGSTAT(
+        ch_bam_markdup.map { meta, bam -> [ meta, bam, [] ] }
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_FLAGSTAT.out.flagstat.map { _meta, file -> file })
     //
     // MODULE: Count reads per gene (featureCounts)
     // combine() attaches the single GTF file to every BAM -> [ meta, bam, gtf ]
