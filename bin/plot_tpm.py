@@ -12,10 +12,10 @@ Output
 import os
 import sys
 
-os.environ["MPLCONFIGDIR"] = os.getcwd()  # matplotlib needs a writable cache directory inside the container
+os.environ["MPLCONFIGDIR"] = os.getcwd()  #writable cache directory for matplotlib inside the conatiner
 
 import matplotlib
-matplotlib.use("Agg")  # no screen in the container: render directly to files
+matplotlib.use("Agg")  
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -23,14 +23,14 @@ import pandas as pd
 TOP_N = 20
 
 tpm = pd.read_csv(sys.argv[1], sep="\t", index_col=0)
-names = tpm.pop("gene_name")          # keep readable gene names separately
+names = tpm.pop("gene_name")          #save readable gene names 
 samples = list(tpm.columns)
-log_tpm = np.log10(tpm + 1)           # log scale: TPM values span several orders of magnitude
+log_tpm = np.log10(tpm + 1)           # log scale to better depict the magnitude od the graph
 
-# 1) Top expressed genes
+# 1)Top 10 of expressed genes
 top = tpm.loc[tpm.mean(axis=1).sort_values(ascending=False).index[:TOP_N]]
 ax = top.set_index(names[top.index]).plot.barh(figsize=(8, 7))
-ax.invert_yaxis()                     # highest expressed gene on top
+ax.invert_yaxis()                     #put gene with highest expression to the top
 ax.set_xlabel("TPM")
 ax.set_ylabel("")
 ax.set_title(f"Top {TOP_N} genes by mean TPM")
@@ -38,7 +38,7 @@ plt.tight_layout()
 plt.savefig("tpm_top_genes_mqc.png", dpi=150)
 plt.close()
 
-# 2) Distribution of expression values per sample (only genes with TPM > 0)
+# 2) Distribution of expression values per sample for genes with TPM>0 
 fig, ax = plt.subplots(figsize=(1.5 + 1.5 * len(samples), 5))
 ax.boxplot([log_tpm[s][tpm[s] > 0] for s in samples], tick_labels=samples)
 ax.set_ylabel("log10(TPM + 1)")
@@ -48,7 +48,7 @@ plt.tight_layout()
 plt.savefig("tpm_distribution_mqc.png", dpi=150)
 plt.close()
 
-# 3) Sample-to-sample correlation (needs at least two samples)
+# 3) Sample-to-sample correlation 
 if len(samples) >= 2:
     corr = log_tpm.corr(method="spearman")
     fig, ax = plt.subplots(figsize=(1.5 + 1.2 * len(samples), 1 + 1.2 * len(samples)))
