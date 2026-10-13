@@ -78,21 +78,16 @@ max_memory: "6.GB"
 When you run the above command, Nextflow automatically pulls the pipeline code from GitHub and stores it as a cached version. When running the pipeline after this, it will always use the cached version if available - even if the pipeline has been updated since. To make sure that you're running the latest version of the pipeline, make sure that you regularly update the cached version of the pipeline:
 
 ```bash
-nextflow pull lohtrue/analysisrnaseq
+nextflow pull lohtrue/analysisrnaseq -r dev
 ```
 
 ### Reproducibility
 
-It is a good idea to specify the pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline. If you keep using the same tag, you'll be running the same version of the pipeline, even if there have been changes to the code since.
+It is a good idea to specify the pipeline version when running the pipeline on your data. This ensures that a specific version of the pipeline code and software are used when you run your pipeline.
 
-First, go to the [lohtrue/analysisrnaseq releases page](https://github.com/lohtrue/analysisrnaseq/releases) and find the latest pipeline version - numeric only (eg. `1.3.1`). Then specify this when running the pipeline with `-r` (one hyphen) - eg. `-r 1.3.1`. Of course, you can switch to another version by changing the number after the `-r` flag.
+Use `-r` (one hyphen) to choose the version: either a branch (e.g. `-r dev`) or, once releases are available, a version tag (e.g. `-r 1.0.0`). The version used is logged in the reports, for example at the bottom of the MultiQC report, so you can see later which version produced your results.
 
-This version number will be logged in reports when you run the pipeline, so that you'll know what you used when you look back in the future. For example, at the bottom of the MultiQC reports.
-
-To further assist in reproducibility, you can use share and reuse [parameter files](#running-the-pipeline) to repeat pipeline runs with the same settings without having to write out a command with every single parameter.
-
-> [!TIP]
-> If you wish to share such profile (such as upload as supplementary material for academic publications), make sure to NOT include cluster specific paths to files, nor institutional specific profiles.
+To further assist in reproducibility, you can share and reuse [parameter files](#using-a-params-file) to repeat pipeline runs with the same settings without having to write out a command with every single parameter.
 
 ## Core Nextflow arguments
 
@@ -104,9 +99,6 @@ To further assist in reproducibility, you can use share and reuse [parameter fil
 Use this parameter to choose a configuration profile. Profiles can give configuration presets for different compute environments.
 
 Several generic profiles are bundled with the pipeline which instruct the pipeline to use software packaged using different methods (Docker, Singularity, Podman, Shifter, Charliecloud, Apptainer, Conda) - see below.
-
-> [!IMPORTANT]
-> We highly recommend the use of Docker or Singularity containers for full pipeline reproducibility, however when this is not possible, Conda is also supported.
 
 Note that multiple profiles can be loaded, for example: `-profile test,docker` - the order of arguments is important!
 They are loaded in sequence, so later profiles can overwrite earlier profiles.
@@ -130,8 +122,8 @@ If `-profile` is not specified, the pipeline will run locally and expect all sof
   - A generic configuration profile to be used with [Apptainer](https://apptainer.org/)
 - `wave`
   - A generic configuration profile to enable [Wave](https://seqera.io/wave/) containers. Use together with one of the above (requires Nextflow `24.03.0-edge` or later).
-- `conda`
-  - A generic configuration profile to be used with [Conda](https://conda.io/docs/). Please only use Conda as a last resort i.e. when it's not possible to run the pipeline with Docker, Singularity, Podman, Shifter, Charliecloud, or Apptainer.
+
+Only `docker` has been tested with this pipeline. Conda is not supported, because the local modules (`tpm_table`, `plot_tpm`) do not provide a Conda environment.
 
 ### `-resume`
 
@@ -145,36 +137,58 @@ Specify the path to a specific config file (this is a core Nextflow command). Se
 
 ## Custom configuration
 
-### Resource requests
+### Resource limits
 
-Whilst the default requirements set within the pipeline will hopefully work for most people and with most input data, you may find that you want to customise the compute resources that the pipeline requests. Each step in the pipeline has a default set of requirements for number of CPUs, memory and time. For most of the pipeline steps, if the job exits with any of the error codes specified [here](https://github.com/nf-core/rnaseq/blob/4c27ef5610c87db00c3c5a3eed10b1d161abf575/conf/base.config#L18) it will automatically be resubmitted with higher resources request (2 x original, then 3 x original). If it still fails after the third attempt then the pipeline execution is stopped.
+By default, the pipeline is set up for computers with limited resources; each task uses at most 4 CPUs, 6 GB of memory and 6 hours. These limits can be changed with the following parameters:
 
-To change the resource requests, please see the [max resources](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#set-max-resources) and [customise process resources](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#customize-process-resources) section of the nf-core website.
+| Parameter      | Default | Description                     |
+| -------------- | ------- | ------------------------------- |
+| `--max_cpus`   | `4`     | Maximum number of CPUs per task |
+| `--max_memory` | `6.GB`  | Maximum memory per task         |
+| `--max_time`   | `6.h`   | Maximum runtime per task        |
 
-### Custom Containers
 
-In some cases, you may wish to change the container or conda environment used by a pipeline steps for a particular tool. By default, nf-core pipelines use containers and software from the [biocontainers](https://biocontainers.pro/) or [bioconda](https://bioconda.github.io/) projects. However, in some cases the pipeline specified version maybe out of date.
+### Subsampling
 
-To use a different container from the default container or conda environment specified in a pipeline, please see the [updating tool versions](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#update-tool-versions) section of the nf-core website.
+With `--subsample`, only a specified fraction of the reads of each sample is used, e.g. `--subsample 0.1` keeps 10% of the reads. The value must be between 0 and 1. A fixed seed is used, so the same reads are selected in every run. By default, all reads are used.
 
-### Custom Tool Arguments
+### Example: running on laptop
 
-A pipeline might not always support every possible argument or option of a particular tool used in pipeline. Fortunately, nf-core pipelines provide some freedom to users to insert additional parameters that the pipeline does not include by default.
+The following command runs the pipeline on a laptop with 2 CPUs and 5 GB RAM, using only 10 % of the reads of each sample: 
+
+```bash
+nextflow run lohtrue/analysisrnaseq -r dev \
+    -profile docker \
+    --input samplesheet.csv \
+    --fasta genome.fa.gz \
+    --gtf annotation.gtf.gz \
+    --outdir results \
+    --subsample 0.1 \
+    --max_cpus 2 \
+    --max_memory 5.GB \
+    --max_time 12.h
+```
+
+### Custom tool arguments
+
+The arguments passed to each tool are set with `ext.args` in [`conf/modules.config`](../conf/modules.config). To change them without editing the pipeline, create your own config file and pass it with `-c`:
+
+```groovy title="custom.config"
+process {
+    withName: 'FASTP' {
+        ext.args = '--qualified_quality_phred 20'
+    }
+}
+```
 
 ## Running in the background
 
-Nextflow handles job submissions and supervises the running jobs. The Nextflow process must run until the pipeline is finished.
-
-The Nextflow `-bg` flag launches Nextflow in the background, detached from your terminal so that the workflow does not stop if you log out of your session. The logs are saved to a file.
-
-Alternatively, you can use `screen` / `tmux` or similar tool to create a detached session which you can log back into at a later time.
-Some HPC setups also allow you to run nextflow within a cluster job submitted your job scheduler (from where it submits more jobs).
+Nextflow must keep running until the pipeline has finished. With `-bg`, Nextflow runs in the background and writes its output to `.nextflow.log`. On a laptop, make sure it does not go to sleep during the run.
 
 ## Nextflow memory requirements
 
-In some cases, the Nextflow Java virtual machines can start to request a large amount of memory.
-We recommend adding the following line to your environment to limit this (typically in `~/.bashrc` or `~./bash_profile`):
+Nextflow itself runs in Java and can use a lot of memory. To limit this, add the following line to your shell configuration (`~/.zshrc` on macOS, `~/.bashrc` on Linux):
 
 ```bash
-NXF_OPTS='-Xms1g -Xmx4g'
+export NXF_OPTS='-Xms1g -Xmx2g'
 ```
