@@ -10,19 +10,21 @@
 
 ## Pipeline steps
 
-1. Subsampling of reads - optional ([`fastp`](https://nf-co.re/modules/fq_subsample))
-2. Read quality control ([`FastQC`](https://nf-co.re/modules/FastQC/))
+1. Subsampling of reads - optional ([`fq subsample`](https://nf-co.re/modules/fq_subsample))
+2. Read quality control ([`FastQC`](https://nf-co.re/modules/fastqc/))
 3. Adapter/quality trimming ([`fastp`](https://nf-co.re/modules/fastp/))
 4. Decompression of reference files - if gzipped ([`gunzip`](https://nf-co.re/modules/gunzip/))
 5. Extraction of splice sites([`HISAT2_extractsplicesites`](https://nf-co.re/modules/hisat2_extractsplicesites/))
 6. Building index for reference genome ([`HISAT2_build`](https://nf-co.re/modules/hisat2_build/))
 7. Alignment to the reference genome ([`HISAT2_align`](https://nf-co.re/modules/hisat2_align/))
-8. Sorting of alignments ([`SAMtools_sort`](https://nf-co.re/modules/samtools_sort/))
-9. Duplicate marking ([`Picard_markduplicates`](https://nf-co.re/modules/picard_markduplicates/))
-10. Gene-level read counting ([`featureCounts`](https://nf-co.re/modules/subread_featurecounts))
-11. Transcripts per Million (TPM) expression table (genes × samples) ([`tpm_table`](modules/local/tpm_table/main.nf))
-12. Potting TPM values ([`local/plot_tpm`](modules/local/plot_tpm/main.nf))
-13. Summary report ([`MultiQC`](https://nf-co.re/modules/multiqc/))
+8. Adding mate information to paired reads ([`SAMtools_fixmate`](https://nf-co.re/modules/samtools_fixmate/))
+9. Sorting of alignments ([`samtools_sort`](https://nf-co.re/modules/samtools_sort/))
+10. Duplicate marking ([`samtools_markdup`](https://nf-co.re/modules/samtools_markdup/))
+11. Alignment statistics - count mapped, paired and duplicate reads ([`samtools_flagstat`](https://nf-co.re/modules/samtools_flagstat/))
+12. Gene-level read counting ([`featureCounts`](https://nf-co.re/modules/subread_featurecounts))
+13. Transcripts per Million (TPM) expression table (genes × samples) ([`tpm_table`](modules/local/tpm_table/main.nf))
+14. Potting TPM values ([`local/plot_tpm`](modules/local/plot_tpm/main.nf))
+15. Summary report ([`MultiQC`](https://nf-co.re/modules/multiqc/))
 
 
 ## Usage
@@ -62,7 +64,7 @@ For more details and further functionality / (e.g. subsampling, resource limits)
 
 ## Credits
 
-lohtrue/analysisrnaseq was originally written by Hanna Lohmann, Pia Truebenbach.
+lohtrue/analysisrnaseq was originally written by Hanna Lohmann and Pia Trübenbach.
 
 
 ## Contributions and Support
@@ -70,11 +72,6 @@ lohtrue/analysisrnaseq was originally written by Hanna Lohmann, Pia Truebenbach.
 If you would like to contribute to this pipeline, please see the [contributing guidelines](docs/CONTRIBUTING.md).
 
 ## Citations
-
-<!-- TODO nf-core: Add citation for pipeline after first release. Uncomment lines below and update Zenodo doi and badge at the top of this file. -->
-<!-- If you use lohtrue/analysisrnaseq for your analysis, please cite it using the following doi: [10.5281/zenodo.XXXXXX](https://doi.org/10.5281/zenodo.XXXXXX) -->
-
-<!-- TODO nf-core: Add bibliography of tools and data used in your pipeline -->
 
 An extensive list of references for the tools used by the pipeline can be found in the [`CITATIONS.md`](CITATIONS.md) file.
 
