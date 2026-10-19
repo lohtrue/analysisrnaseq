@@ -12,7 +12,7 @@
 
 - [fq](https://github.com/stjude-rust-labs/fq)
 
-> St. Jude Rust Labs. fq: FASTQ manipulation tools [Online]. Available at: https://github.com/stjude-rust-labs/fq.
+> St. Jude Rust Labs. fq filters, subsamples, and validates FASTQ files [Online]. Available at: https://github.com/stjude-rust-labs/fq.
 
 - [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 

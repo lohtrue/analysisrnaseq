@@ -30,13 +30,14 @@ To contribute code to any nf-core pipeline:
 
 If you are not used to this workflow with Git, see the [GitHub documentation](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests) or [Git resources](https://try.github.io/) for more information.
 
+### Testing
+
 The quickest way to test changes is to run the pipeline with both test profiles:
 
 ```bash
 nextflow run . -profile test,docker --outdir results_test
 nextflow run . -profile test_full,docker --outdir results_test_full
 ```
-### Testing
 
 Once you have made your changes, run the pipeline with nf-test to test them locally.
 For additional information, use the `--verbose` flag to view the Nextflow console log output.
@@ -92,8 +93,8 @@ Please also refer to the [pipeline-specific contribution guidelines](#pipeline-s
 - [ ] Add new or updated parameters and relevant help text to `nextflow_schema.json` with [nf-core/tools](#default-parameter-values).
 - [ ] Add validation for relevant parameters to `subworkflows/local/utils_nfcore_analysisrnaseq_pipeline/main.nf`.
 - [ ] Perform local tests to validate that the new code works as expected.
-  - [ ] If applicable, add a new test in the `tests` directory.
-- [ ] Update `docs/usage.md`, `docs/output.md` and `CITATIONS.md` as appropriate..
+- [ ] If applicable, add a new test in the `tests` directory.
+- [ ] Update `docs/usage.md`, `docs/output.md` and `CITATIONS.md` as appropriate.
 - [ ] [Lint](#lint-tests) the code with nf-core/tools.
 - [ ] Update any diagrams or pipeline images as necessary.
 - [ ] Update MultiQC config `assets/multiqc_config.yml` so relevant suffixes, file name cleanup, and module plots are in the appropriate order.
