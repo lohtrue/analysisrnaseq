@@ -75,7 +75,7 @@ workflow ANALYSISRNASEQ {
     def ch_trimmed_reads = FASTP.out.reads
 
 
-        //
+    //
     // Reference files (genome and annotation)
     //
     def ch_fasta = channel.value([ [id: 'genome'], file(params.fasta, checkIfExists: true) ])
@@ -127,8 +127,8 @@ workflow ANALYSISRNASEQ {
     def ch_bam = HISAT2_ALIGN.out.bam
 
     //
-    // MODULE: Add mate information (fixmate -m), required by samtools markdup
-    // HISAT2 writes mates next to each other, so no name sorting is needed before
+    // MODULE: Add mate information (fixmate -m)-> necessary for samtools markdup
+    // 
     //
     SAMTOOLS_FIXMATE(
         ch_bam,
@@ -136,7 +136,7 @@ workflow ANALYSISRNASEQ {
     )
 
     //
-    // MODULE: Sort BAM files by genomic coordinate (required by samtools markdup)
+    // MODULE: Sort BAM files by genomic coordinate necessary for samtools markdup
     //
     SAMTOOLS_SORT(
         SAMTOOLS_FIXMATE.out.bam,
@@ -146,7 +146,7 @@ workflow ANALYSISRNASEQ {
     def ch_bam_sorted = SAMTOOLS_SORT.out.bam
 
     //
-    //MODULE: Mark duplicate reads (duplicates are flagged, not removed)
+    //MODULE: Mark duplicate reads (duplicates are only flagged and not removed)
     //
     SAMTOOLS_MARKDUP(
         ch_bam_sorted,
@@ -166,7 +166,7 @@ workflow ANALYSISRNASEQ {
     ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_FLAGSTAT.out.flagstat.map { _meta, file -> file })
     //
     // MODULE: Count reads per gene (featureCounts)
-    // combine() attaches the single GTF file to every BAM -> [ meta, bam, gtf ]
+    // combine() attaches the single GTF file to every BAM 
     // Strandedness and single/paired-end are read from meta by the module
     //
     SUBREAD_FEATURECOUNTS(
@@ -174,9 +174,9 @@ workflow ANALYSISRNASEQ {
     )
     ch_multiqc_files = ch_multiqc_files.mix(SUBREAD_FEATURECOUNTS.out.summary.map{ _meta, file -> file })
 
-        //
+    //
     // MODULE (local): Convert counts to TPM and merge all samples into one table
-    // collect() waits until all samples are counted and passes all files at once
+    // 
     //
     TPM_TABLE(
         SUBREAD_FEATURECOUNTS.out.counts.map { _meta, file -> file }.collect()
@@ -184,7 +184,7 @@ workflow ANALYSISRNASEQ {
 
     //
     // MODULE (local): Plot TPM overview (top genes, distribution, sample correlation)
-    // Files ending in _mqc.png are picked up by MultiQC and shown in the report
+    // Files are picked up by MultiQC and shown in the report
     //
     PLOT_TPM(TPM_TABLE.out.tpm)
     ch_multiqc_files = ch_multiqc_files.mix(PLOT_TPM.out.plots)
