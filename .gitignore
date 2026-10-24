@@ -11,3 +11,5 @@ null/
 results_test/
 results_full/
 results*/
+perf_*/
+work_*/
