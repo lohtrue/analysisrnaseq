@@ -23,7 +23,6 @@ To contribute code to any nf-core pipeline:
 - [ ] Check whether a GitHub [issue](https://github.com/lohtrue/analysisrnaseq/issues) about your idea already exists. If an issue does not exist, create one so that others are aware you are working on it.
 - [ ] [Fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the [lohtrue/analysisrnaseq repository](https://github.com/lohtrue/analysisrnaseq) to your GitHub account.
 - [ ] Create a branch on your forked repository and make your changes following [pipeline conventions](#pipeline-contribution-conventions) (if applicable).
-- [ ] To fix major bugs, name your branch `patch` and follow the [patch release](#patch-release) process.
 - [ ] Update relevant documentation within the `docs/` folder, use nf-core/tools to update `nextflow_schema.json`, and update `CITATIONS.md`.
 - [ ] Run and/or update tests. See [Testing](#testing) for more information.
 - [ ] [Lint](#lint-tests) your code with nf-core/tools.
@@ -31,11 +30,14 @@ To contribute code to any nf-core pipeline:
 
 If you are not used to this workflow with Git, see the [GitHub documentation](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests) or [Git resources](https://try.github.io/) for more information.
 
-
-
-
-
 ### Testing
+
+The quickest way to test changes is to run the pipeline with both test profiles:
+
+```bash
+nextflow run . -profile test,docker --outdir results_test
+nextflow run . -profile test_full,docker --outdir results_test_full
+```
 
 Once you have made your changes, run the pipeline with nf-test to test them locally.
 For additional information, use the `--verbose` flag to view the Nextflow console log output.
@@ -75,15 +77,6 @@ GitHub Actions runs the pipeline on this data to ensure it runs through and exit
 If there are any failures then the automated tests fail.
 These tests are run with the latest available version of Nextflow and the minimum required version specified in the pipeline code.
 
-### Patch release
-
-> [!WARNING]
-> Only in the unlikely event of a release that contains a critical bug.
-
-- [ ] Create a new branch `patch` on your fork based on `upstream/main` or `upstream/master`.
-- [ ] Fix the bug and use nf-core/tools to bump the version to the next semantic version, for example, `1.2.3` → `1.2.4`.
-- [ ] Open a Pull Request from `patch` directly to `main`/`master` with the changes.
-
 ### Pipeline contribution conventions
 
 nf-core semi-standardises how you write code and other contributions to make the lohtrue/analysisrnaseq code and processing logic more understandable for new contributors and to ensure quality.
@@ -95,13 +88,13 @@ Please also refer to the [pipeline-specific contribution guidelines](#pipeline-s
 
 - [ ] Define the corresponding [input channel](#channel-naming-schemes) into your new process from the expected previous process channel.
 - [ ] Install a module with nf-core/tools, or write a local module (see [default processes resource requirements](#default-processes-resource-requirements)), and add it to the target `<workflow>.nf`.
-- [ ] Define the output channel if needed. Mix the version output channel into `ch_versions` and relevant files into `ch_multiqc`.
+- [ ] Define the output channel if needed. Mix relevant files into `ch_multiqc_files`. Software versions are collected automatically via the `versions` topic channel.
 - [ ] Add new or updated parameters to `nextflow.config` with a [default value](#default-parameter-values).
 - [ ] Add new or updated parameters and relevant help text to `nextflow_schema.json` with [nf-core/tools](#default-parameter-values).
-- [ ] Add validation for relevant parameters to the pipeline utilisation section of `utils_nfcore_\_pipeline/main.nf` subworkflow.
+- [ ] Add validation for relevant parameters to `subworkflows/local/utils_nfcore_analysisrnaseq_pipeline/main.nf`.
 - [ ] Perform local tests to validate that the new code works as expected.
-  - [ ] If applicable, add a new test in the `tests` directory.
-- [ ] Update `usage.md`, `output.md`, and `citation.md` as appropriate.
+- [ ] If applicable, add a new test in the `tests` directory.
+- [ ] Update `docs/usage.md`, `docs/output.md` and `CITATIONS.md` as appropriate.
 - [ ] [Lint](#lint-tests) the code with nf-core/tools.
 - [ ] Update any diagrams or pipeline images as necessary.
 - [ ] Update MultiQC config `assets/multiqc_config.yml` so relevant suffixes, file name cleanup, and module plots are in the appropriate order.
@@ -114,8 +107,8 @@ To update the minimum required Nextflow version, see the [Nextflow version bumpi
 
 Use the following naming schemes for channels to make the channel flow easier to understand:
 
-- Initial process channel: `ch_output_from_<process>`
-- Intermediate and terminal channels: `ch_<previousprocess>_for_<nextprocess>`
+- Channels start with `ch_` and describe their content, e.g. `ch_reads`, `ch_bam_sorted`, `ch_bam_markdup`.
+- Files for the MultiQC report are collected in `ch_multiqc_files`.
 
 #### Default parameter values
 
@@ -156,4 +149,16 @@ If you update images or graphics, follow the nf-core [style guidelines](https://
 
 ## Pipeline specific contribution guidelines
 
-<!-- TODO nf-core: Add any pipeline specific contribution guidelines here, such as coding styles, procedures, checklists etc. -->
+lohtrue/analysisrnaseq is designed to run on laptops with limited memory (e.g. 6 GB RAM). Please keep this in mind when adding new steps: 
+
+- [ ] Prefer lightweight tools. 
+- [ ] Work on a feature branch and open a pull request against `dev`.
+- [ ] Set tool arguments with `ext.args` in `conf/modules.config`, not in the module itself.
+- [ ] Custom scripts belong in `bin/`, custom processes in `modules/local/`.
+- [ ] Test your changes with both test profiles before opening a pull request:
+
+```bash
+  nextflow run . -profile test,docker --outdir results_test
+  nextflow run . -profile test_full,docker --outdir results_test_full
+```
+- [ ] Update the metro map (`docs/images/metro_map.drawio.svg`), `docs/usage.md`, `docs/output.md` and `CITATIONS.md` if your change affects them.
