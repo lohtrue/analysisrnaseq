@@ -1,4 +1,4 @@
-6# lohtrue/analysisrnaseq
+# lohtrue/analysisrnaseq
 
 ## Introduction
 

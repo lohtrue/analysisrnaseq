@@ -19,7 +19,7 @@ Initial release of lohtrue/analysisrnaseq, created with the [nf-core](https://nf
 - Duplicate marking with samtools markdup
 - Alignment statistics with samtools flagstat
 - Gene-level read counting with featureCounts
-- Local module `TPM_TABLE`creates TPM expression table (genes × samples)
+- Local module `TPM_TABLE` creates TPM expression table (genes × samples)
 - Local module `PLOT_TPM` plots of the top 20 genes, the expression distribution and the sample correlation, included in the MultiQC report
 - MultiQC report summarising all QC results and software versions
 - Resource limit parameters `--max_cpus`, `--max_memory` and `--max_time` (defaults: 4 CPUs, 6 GB, 6 h) for running on laptops
